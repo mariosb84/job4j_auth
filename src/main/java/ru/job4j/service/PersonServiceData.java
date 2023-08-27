@@ -25,8 +25,10 @@ public class PersonServiceData implements PersonService {
     }
 
     @Override
-    public void update(Person person) {
+    public boolean update(Person person) {
         personRepository.save(person);
+        return personRepository.findById(person.getId()).isPresent();
+
     }
 
     @Override
@@ -35,8 +37,9 @@ public class PersonServiceData implements PersonService {
     }
 
     @Override
-    public void delete(Person person) {
+    public boolean delete(Person person) {
         personRepository.delete(person);
+        return personRepository.findById(person.getId()).isEmpty();
     }
 
 }

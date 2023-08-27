@@ -11,10 +11,10 @@ public interface PersonService {
 
      Person add(Person person);
 
-   void update(Person person);
+   boolean update(Person person);
 
      Optional<Person> findById(int id);
 
-    void delete(Person person);
+    boolean delete(Person person);
 
 }

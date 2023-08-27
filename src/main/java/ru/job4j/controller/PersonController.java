@@ -33,24 +33,29 @@ public class PersonController {
 
     @PostMapping("/")
     public ResponseEntity<Person> create(@RequestBody Person person) {
+        Person result = this.persons.add(person);
         return new ResponseEntity<Person>(
-                this.persons.add(person),
-                HttpStatus.CREATED
+                result,
+                (result != null) ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST
         );
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
-        this.persons.update(person);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Boolean> update(@RequestBody Person person) {
+        if ((this.persons.update(person))) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<Boolean> delete(@PathVariable int id) {
         Person person = new Person();
         person.setId(id);
-        this.persons.delete(person);
-        return ResponseEntity.ok().build();
+        if ((this.persons.delete(person))) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
 }
