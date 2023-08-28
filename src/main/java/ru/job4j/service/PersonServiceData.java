@@ -20,8 +20,12 @@ public class PersonServiceData implements PersonService {
     }
 
     @Override
-    public Person add(Person person) {
-        return personRepository.save(person);
+    public Optional<Person> add(Person person) {
+      Person result = personRepository.save(person);
+        if (Optional.of(result).isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(result);
     }
 
     @Override

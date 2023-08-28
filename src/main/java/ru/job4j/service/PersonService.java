@@ -9,7 +9,7 @@ public interface PersonService {
 
      List<Person> findAll();
 
-     Person add(Person person);
+    Optional<Person> add(Person person);
 
    boolean update(Person person);
 

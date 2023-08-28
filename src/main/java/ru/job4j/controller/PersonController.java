@@ -33,10 +33,10 @@ public class PersonController {
 
     @PostMapping("/")
     public ResponseEntity<Person> create(@RequestBody Person person) {
-        Person result = this.persons.add(person);
+        var result = this.persons.add(person);
         return new ResponseEntity<Person>(
-                result,
-                (result != null) ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST
+                result.orElse(new Person()),
+                result.isPresent() ? HttpStatus.CREATED : HttpStatus.CONFLICT
         );
     }
 
@@ -45,7 +45,7 @@ public class PersonController {
         if ((this.persons.update(person))) {
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
@@ -55,7 +55,7 @@ public class PersonController {
         if ((this.persons.delete(person))) {
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.notFound().build();
     }
 
 }
