@@ -17,4 +17,10 @@ public interface PersonService {
 
     boolean delete(Person person);
 
+    void save(Person person);
+
+    Person findByLogin(String login);
+
+    List<Person> findAllPersonsMem();
+
 }

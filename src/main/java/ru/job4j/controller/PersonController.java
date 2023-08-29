@@ -2,6 +2,7 @@ package ru.job4j.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Person;
 import ru.job4j.service.PersonService;
@@ -11,10 +12,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/person")
 public class PersonController {
-    private final PersonService persons;
 
-    public PersonController(final PersonService persons) {
+    private final PersonService persons;
+    private final BCryptPasswordEncoder encoder;
+
+    public PersonController(final PersonService persons,
+                            BCryptPasswordEncoder encoder) {
         this.persons = persons;
+        this.encoder = encoder;
     }
 
     @GetMapping("/")
@@ -56,6 +61,17 @@ public class PersonController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/sign-up")
+    public void signUp(@RequestBody Person person) {
+        person.setPassword(encoder.encode(person.getPassword()));
+       persons.save(person);
+    }
+
+    @GetMapping("/all")
+    public List<Person> findAllPersons() {
+        return persons.findAllPersonsMem();
     }
 
 }
