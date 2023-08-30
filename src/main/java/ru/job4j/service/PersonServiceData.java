@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.job4j.domain.Person;
-import ru.job4j.repository.PersonMemStore;
 import ru.job4j.repository.PersonRepository;
 
 import java.util.List;
@@ -20,8 +19,6 @@ import static java.util.Collections.emptyList;
 public class PersonServiceData implements PersonService, UserDetailsService {
 
     private final PersonRepository personRepository;
-
-    private final PersonMemStore persons;
 
     @Override
     public List<Person> findAll() {
@@ -57,23 +54,15 @@ public class PersonServiceData implements PersonService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Person person = persons.findByLogin(login);
+        Person person = personRepository.findById(
+                (personRepository.findAll().stream().
+                        filter(p -> p.getLogin().equals(login)).
+                        findAny()).orElseThrow().getId()).
+                orElseThrow();
         if (person == null) {
             throw new UsernameNotFoundException(login);
         }
         return new User(person.getLogin(), person.getPassword(), emptyList());
-    }
-
-    public void save(Person person) {
-        persons.save(person);
-    }
-
-    public Person findByLogin(String login) {
-        return persons.findByLogin(login);
-    }
-
-    public List<Person> findAllPersonsMem() {
-        return persons.findAllPersons();
     }
 
 }
