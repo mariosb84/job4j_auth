@@ -54,15 +54,11 @@ public class PersonServiceData implements PersonService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Person person = personRepository.findById(
-                (personRepository.findAll().stream().
-                        filter(p -> p.getLogin().equals(login)).
-                        findAny()).orElseThrow().getId()).
-                orElseThrow();
-        if (person == null) {
+        Person user = personRepository.findPersonByLogin(login).orElseThrow();
+        if (user == null) {
             throw new UsernameNotFoundException(login);
         }
-        return new User(person.getLogin(), person.getPassword(), emptyList());
+        return new User(user.getLogin(), user.getPassword(), emptyList());
     }
 
 }
