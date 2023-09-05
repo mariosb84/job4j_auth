@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.domain.Person;
+import ru.job4j.domain.PersonDto;
 import ru.job4j.service.PersonService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,8 +71,10 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Boolean> update(@RequestBody Person person) {
-        if ((this.persons.update(person))) {
+   /* public ResponseEntity<Boolean> update(@RequestBody Person person) {*/
+     public ResponseEntity<Boolean> update(@RequestBody PersonDto person) {
+        /*if ((this.persons.update(person))) { */
+           if ((this.persons.updatePatch(person))) {
             return ResponseEntity.ok().build();
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Объект не обновлен!");
