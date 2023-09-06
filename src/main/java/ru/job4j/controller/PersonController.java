@@ -6,14 +6,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.domain.Person;
 import ru.job4j.domain.PersonDto;
+import ru.job4j.handlers.Operation;
 import ru.job4j.service.PersonService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -55,12 +58,16 @@ public class PersonController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Person> create(@Valid @RequestBody Person person) {
        if (person.getLogin() == null || person.getPassword() == null) {
             throw new NullPointerException("Login and password mustn't be empty");
         }
-        if (person.getPassword().length() < 6) {
-            throw new IllegalArgumentException("Invalid password. Password length must be more than 5 characters.");
+        if (person.getPassword().length() < 3
+                || person.getPassword().isEmpty()
+                || person.getPassword().isBlank()) {
+            throw new IllegalArgumentException(
+                    "Invalid password. Password length must be more than 3 characters.");
         }
         person.setPassword(encoder.encode(person.getPassword()));
         var result = this.persons.add(person);
@@ -71,8 +78,9 @@ public class PersonController {
     }
 
     @PutMapping("/")
+    @Validated(Operation.OnUpdate.class)
    /* public ResponseEntity<Boolean> update(@RequestBody Person person) {*/
-     public ResponseEntity<Boolean> update(@RequestBody PersonDto person) {
+     public ResponseEntity<Boolean> update(@Valid @RequestBody PersonDto person) {
         /*if ((this.persons.update(person))) { */
            if ((this.persons.updatePatch(person))) {
             return ResponseEntity.ok().build();
@@ -81,7 +89,8 @@ public class PersonController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable int id) {
+    @Validated(Operation.OnDelete.class)
+    public ResponseEntity<Boolean> delete(@Valid @PathVariable int id) {
         Person person = new Person();
         person.setId(id);
         if ((this.persons.delete(person))) {
