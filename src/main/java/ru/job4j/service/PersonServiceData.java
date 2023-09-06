@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.job4j.domain.Person;
 import ru.job4j.domain.PersonDto;
@@ -18,6 +19,8 @@ import static java.util.Collections.emptyList;
 @Service
 @AllArgsConstructor
 public class PersonServiceData implements PersonService, UserDetailsService {
+
+    private final BCryptPasswordEncoder encoder;
 
     private final PersonRepository personRepository;
 
@@ -58,7 +61,7 @@ public class PersonServiceData implements PersonService, UserDetailsService {
         var person = personRepository.findById(personDto.getId());
         if (person.isPresent()) {
             Person result = person.get();
-            result.setPassword(personDto.getPassword());
+            result.setPassword(encoder.encode(personDto.getPassword()));
              this.add(person.get());
              return true;
         }
