@@ -62,7 +62,7 @@ public class PersonServiceData implements PersonService, UserDetailsService {
         if (person.isPresent()) {
             Person result = person.get();
             result.setPassword(encoder.encode(personDto.getPassword()));
-             this.add(person.get());
+             this.add(result);
              return true;
         }
         return false;
